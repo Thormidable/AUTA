@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
-{ 
+{
     public class TemplateBlock : CommandInterface
     {
-
         public TemplateBlock()
         {
             templateTypes = new TemplateTypes();
             templateLabels = new TemplateLabels();
             templateFunctions = new List<TemplateFunctions>();
-            if(lStripDefaultParams == null) lStripDefaultParams = new Regex(TemplateInstantiationPlugin.DefaultValue());
+            if (lStripDefaultParams == null) lStripDefaultParams = new Regex(TemplateInstantiationPlugin.DefaultValue());
         }
 
         public override string GetAcceptedCommands()
@@ -45,7 +42,7 @@ namespace AUTA
                         var newFuncBody = new TemplateFunctions();
                         if (newFuncBody.AcceptedLine(lLine))
                         {
-                           i = newFuncBody.CacheBlock(lBlock.lines, i, lBlock.filePath);
+                            i = newFuncBody.CacheBlock(lBlock.lines, i, lBlock.filePath);
                             templateFunctions.Add(newFuncBody);
                         }
                     }
@@ -68,7 +65,6 @@ namespace AUTA
             }
             lResult = templateLabels.DuplicateForLabels(lResult);
             return lResult.ToArray();
-
         }
 
         public string[] GenerateDefineText(CommandBlock lBlock)
@@ -81,6 +77,7 @@ namespace AUTA
             lResult = templateLabels.DuplicateForLabels(lResult);
             return lResult.ToArray();
         }
+
         public string[] GenerateSpecialisationText(CommandBlock lBlock)
         {
             List<string> lResult = new List<string>();
@@ -92,6 +89,7 @@ namespace AUTA
             lResult = templateTypes.DuplicateForAllTypes(lResult);
             return lResult.ToArray();
         }
+
         public string[] GenerateInstanceText(CommandBlock lBlock)
         {
             List<string> lResult = new List<string>();
@@ -144,11 +142,10 @@ namespace AUTA
             return lStripDefaultParams.Replace(lInput, "");
         }
 
-        static Regex lStripDefaultParams = null;
+        private static Regex lStripDefaultParams = null;
 
-        TemplateTypes templateTypes;
-        TemplateLabels templateLabels;
-        List<TemplateFunctions> templateFunctions;
+        private TemplateTypes templateTypes;
+        private TemplateLabels templateLabels;
+        private List<TemplateFunctions> templateFunctions;
     }
-
 }

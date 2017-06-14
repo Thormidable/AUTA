@@ -71,6 +71,8 @@
     <Compile Include="CodeReplicationPlugin.cs" />
     <Compile Include="ImportExportGroupsPlugin.cs" />
     <Compile Include="ImportExportPlugin.cs" />
+    <Compile Include="FlagBlockPlugin.cs" />
+    <Compile Include="FlagBlockBodyPlugin.cs" />
     <Compile Include="ScopeBlockPlugin.cs" />
     <Compile Include="ScopeBlockBodyPlugin.cs" />
     <Compile Include="LabelBlockPlugin.cs" />

@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
-	class Program
-	{
-
+    internal class Program
+    {
         private static void AddPlugins()
         {
             mPlugins.Clear();
@@ -20,6 +16,7 @@ namespace AUTA
             mPlugins.Add(new CodeReplicationPlugin());
             mPlugins.Add(new ImportExportGroupsPlugin());
             mPlugins.Add(ScopeBlock.GetInstance());
+            mPlugins.Add(FlagBlock.GetInstance());
         }
 
         private static void Clear()
@@ -36,37 +33,37 @@ namespace AUTA
 
         public static string[] ProcessExtraCommands(string lLine, List<string> lOutput)
         {
-            foreach(var lPlugin in mPlugins)
+            foreach (var lPlugin in mPlugins)
             {
-                if(lPlugin.IsAcceptedExtraCommands(lLine))
+                if (lPlugin.IsAcceptedExtraCommands(lLine))
                 {
-                   lOutput = lPlugin.ProcessExtraCommands(lLine,lOutput).ToList();
+                    lOutput = lPlugin.ProcessExtraCommands(lLine, lOutput).ToList();
                 }
             }
             return lOutput.ToArray();
         }
 
         private static string[] GetSourceFiles(string lTargetDir)
-		{
-			var lHeaderPaths = Directory.GetFiles(lTargetDir, "*.h", SearchOption.AllDirectories);
-			var lSourcePaths = Directory.GetFiles(lTargetDir, "*.cpp", SearchOption.AllDirectories);
+        {
+            var lHeaderPaths = Directory.GetFiles(lTargetDir, "*.h", SearchOption.AllDirectories);
+            var lSourcePaths = Directory.GetFiles(lTargetDir, "*.cpp", SearchOption.AllDirectories);
             var lCudaSourcePaths = Directory.GetFiles(lTargetDir, "*.cu", SearchOption.AllDirectories);
 
-            var lPaths = new string[lHeaderPaths.Length + lSourcePaths.Length+ lCudaSourcePaths.Length];
-			Array.Copy(lHeaderPaths, lPaths, lHeaderPaths.Length);
-			Array.Copy(lSourcePaths, 0, lPaths, lHeaderPaths.Length, lSourcePaths.Length);
-            Array.Copy(lCudaSourcePaths, 0, lPaths, lHeaderPaths.Length+ lSourcePaths.Length, lCudaSourcePaths.Length);
+            var lPaths = new string[lHeaderPaths.Length + lSourcePaths.Length + lCudaSourcePaths.Length];
+            Array.Copy(lHeaderPaths, lPaths, lHeaderPaths.Length);
+            Array.Copy(lSourcePaths, 0, lPaths, lHeaderPaths.Length, lSourcePaths.Length);
+            Array.Copy(lCudaSourcePaths, 0, lPaths, lHeaderPaths.Length + lSourcePaths.Length, lCudaSourcePaths.Length);
 
             return lPaths;
-		}
-		
+        }
+
         private static void CacheParse(string[] lPaths)
-		{
+        {
             foreach (var lPath in lPaths)
             {
                 bool foundAUTABlock = false;
                 var lLines = File.ReadAllLines(lPath).ToList();
-                for(int index=0; index < lLines.Count; ++index)
+                for (int index = 0; index < lLines.Count; ++index)
                 {
                     var lLine = lLines[index];
                     if (CommandInterface.ParseAUTALine(lLine))
@@ -75,7 +72,7 @@ namespace AUTA
                         var lBlock = plugin?.ExtractAUTABlock(lLines, index, lPath);
                         if (lBlock == null)
                         {
-                            if(plugin != null) Console.WriteLine("ERROR: No Plugin found to support Command Block : " + lPath + " : " + lLine);
+                            if (plugin != null) Console.WriteLine("ERROR: No Plugin found to support Command Block : " + lPath + " : " + lLine);
                             mError = true;
                         }
                         else
@@ -83,18 +80,18 @@ namespace AUTA
                             foundAUTABlock = true;
                             index = lBlock.endIndex;
                             plugin.CacheBlock(lBlock);
-                        }                                              
+                        }
                     }
                 }
                 if (foundAUTABlock == true) ++filesWithAUTABlocks;
             }
-		}
+        }
 
         private static void ProcessParse()
         {
             CacheForProcessing();
 
-            HashSet<string> lImportPaths = new HashSet<string>();            
+            HashSet<string> lImportPaths = new HashSet<string>();
             foreach (var plugin in mPlugins)
             {
                 foreach (var lPath in plugin.mProcessPaths)
@@ -111,7 +108,7 @@ namespace AUTA
                 for (int index = 0; index < lLines.Count; ++index)
                 {
                     var lLine = lLines[index];
-                    if ( CommandInterface.ParseAUTALine(lLine))
+                    if (CommandInterface.ParseAUTALine(lLine))
                     {
                         var plugin = mPlugins.FirstOrDefault(x => x.AcceptedLine(lLine));
                         var lBlock = plugin?.ExtractAUTABlock(lLines, index, lPath);
@@ -160,7 +157,7 @@ namespace AUTA
                 }
             }
         }
-        
+
         static public void CheckErrors()
         {
             if (mError == false)
@@ -168,9 +165,10 @@ namespace AUTA
                 mError = mPlugins.Any(x => x.CheckErrors());
             }
         }
+
         public static void CacheForProcessing()
         {
-            foreach(var lPlugin in mPlugins)
+            foreach (var lPlugin in mPlugins)
             {
                 lPlugin.CacheForProcessing();
             }
@@ -183,7 +181,7 @@ namespace AUTA
             Regex lExp = new Regex(string.Format("{0}({0}|{1})*", lStart, lExtend));
             return lExp.IsMatch(lIdent.Normalize());
         }
-     
+
         static public void OutputResults()
         {
             Console.WriteLine("Found " + totalFiles + " source files");
@@ -195,8 +193,7 @@ namespace AUTA
             Console.WriteLine("Changed " + changedFiles + " files");
         }
 
-
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             string lTargetDir = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
             if (!Directory.Exists(lTargetDir))
@@ -234,9 +231,10 @@ namespace AUTA
 
             return mError ? 1 : 0;
         }
-        static int totalFiles = 0;
-        static int filesWithAUTABlocks = 0;
-        static int changedFiles = 0;
+
+        private static int totalFiles = 0;
+        private static int filesWithAUTABlocks = 0;
+        private static int changedFiles = 0;
 
         private static bool mError = false;
 

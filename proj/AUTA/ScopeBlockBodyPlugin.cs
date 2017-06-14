@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
     public class ScopeBlockBody : CommandInterface
     {
-
         public ScopeBlockBody(CommandBlock lBlock)
         {
             mLabels = new TemplateLabels();
@@ -53,12 +50,12 @@ namespace AUTA
                 }
             }
         }
-        
+
         public override string[] ProcessBlock(CommandBlock lBlock)
         {
             return null;
         }
-        
+
         public string[] ProcessBlock(List<string> lResult)
         {
             List<string> lTempCopy;
@@ -80,21 +77,44 @@ namespace AUTA
             return lTempCopy.ToArray();
         }
 
+        public void ImportSubScopes()
+        {
+            ScopeBlock lAllScopes = ScopeBlock.GetInstance();
+            foreach (string lSubScope in mScopes)
+            {
+                lAllScopes.GetScopeFromTag(lSubScope).ImportSubScopes();
+                var currScope = lAllScopes.GetScopeFromTag(lSubScope);
+                foreach (var ltemptype in currScope.mTypes.templateType)
+                {
+                    if (!mTypes.templateType.Contains(ltemptype)) mTypes.templateType.Add(ltemptype);
+                }
+                if (mLabels.templateLabels == null) mLabels.templateLabels = new List<string>();
+                if (currScope.mLabels.templateLabels != null)
+                {
+                    foreach (var lTempLabel in currScope.mLabels.templateLabels)
+                    {
+                        if (!mLabels.templateLabels.Contains(lTempLabel)) mLabels.templateLabels.Add(lTempLabel);
+                        foreach (var lLabelsets in currScope.mLabels.templateLabelSets)
+                        {
+                            if (!mLabels.templateLabelSets.Contains(lLabelsets)) mLabels.templateLabelSets.Add(lLabelsets);
+                        }
+                    }
+                }
+            }
+        }
+
         public override void CacheForProcessing()
         {
-            if(LoopDetection == true)
+            if (LoopDetection == true)
             {
                 mError = true;
                 Console.WriteLine("ERROR: Circular Reference detected within ScopeBlocks");
                 return;
             }
+            ImportSubScopes();
             mLabels.CacheForProcessing();
             mTypes.CacheForProcessing();
             LoopDetection = true;
-            foreach (var lTag in mScopes)
-            {
-                mScopeBodies.Add(ScopeBlock.GetInstance().GetScopeFromTag(lTag));
-            }
             LoopDetection = false;
         }
 
@@ -106,22 +126,26 @@ namespace AUTA
 
         public override bool CheckErrors()
         {
-
             mError = mError || mLabels.CheckErrors() || mTypes.CheckErrors();
             return mError;
         }
 
-        public TemplateLabels GetLabels() { return mLabels; }
-        public TemplateTypes GetTypes() { return mTypes; }
+        public TemplateLabels GetLabels()
+        {
+            return mLabels;
+        }
 
-        bool LoopDetection;
+        public TemplateTypes GetTypes()
+        {
+            return mTypes;
+        }
 
-       TemplateLabels mLabels;
-       TemplateTypes mTypes;
-        List<string> mScopes;
-        List<ScopeBlockBody> mScopeBodies;
-        static Regex lImportScopeBlock = new Regex(DefaultAUTABegin() + "importscopeblock\\s+([a-zA-Z0-9_]+)");
-        
+        private bool LoopDetection;
+
+        private TemplateLabels mLabels;
+        private TemplateTypes mTypes;
+        private List<string> mScopes;
+        private List<ScopeBlockBody> mScopeBodies;
+        private static Regex lImportScopeBlock = new Regex(DefaultAUTABegin() + "importscopeblock\\s+([a-zA-Z0-9_]+)");
     }
-    
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
@@ -23,7 +19,7 @@ namespace AUTA
         {
             return DefaultAUTABegin() + "(import|export)\\s+(?:[a-zA-Z-0-9_]+)";
         }
-        
+
         public override void Clear()
         {
             importBlocks = 0;
@@ -53,12 +49,12 @@ namespace AUTA
                     }
                 }
             }
-            else if(lCommand == "import")
+            else if (lCommand == "import")
             {
                 mProcessPaths.Add(lBlock.filePath);
             }
         }
-        
+
         public override string[] ProcessBlock(CommandBlock lBlock)
         {
             if (lBlock.elements[0].ToLower() == "import")
@@ -82,11 +78,11 @@ namespace AUTA
 
         public override void OutputResults()
         {
-            Console.WriteLine("Imported "+importBlocks+ " import blocks");
-            Console.WriteLine("Exported "+exportBlocks+ " export blocks");
+            Console.WriteLine("Imported " + importBlocks + " import blocks");
+            Console.WriteLine("Exported " + exportBlocks + " export blocks");
         }
 
-        int importBlocks;
-        int exportBlocks;
+        private int importBlocks;
+        private int exportBlocks;
     }
 }

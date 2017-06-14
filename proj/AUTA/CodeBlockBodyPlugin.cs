@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
-
     public class CodeBlockBodyPlugin : CommandInterface
     {
         public CodeBlockBodyPlugin()
         {
             lRegex = new Regex(TemplateInstantiationPlugin.FunctionDeclarationRegex());
-            lCleanConcatination = new Regex("\\s*##\\s*");
             codeBlockBody = new List<string>();
         }
 
@@ -24,9 +18,9 @@ namespace AUTA
 
         public override void CacheBlock(CommandBlock lBlock)
         {
-            codeBlockBody = lBlock.lines.GetRange(1,lBlock.lines.Count-2);
+            codeBlockBody = lBlock.lines.GetRange(1, lBlock.lines.Count - 2);
         }
-        
+
         public override string[] ProcessBlock(CommandBlock lBlock)
         {
             return codeBlockBody.ToArray();
@@ -37,14 +31,12 @@ namespace AUTA
             base.Clear();
             codeBlockBody.Clear();
         }
-        
+
         public override void CacheForProcessing()
         {
-
         }
 
         public List<string> codeBlockBody;
-        Regex lRegex;
-        Regex lCleanConcatination;        
+        private Regex lRegex;
     }
 }

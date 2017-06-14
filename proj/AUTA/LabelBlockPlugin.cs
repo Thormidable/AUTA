@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
     public class TemplateLabels : CommandInterface
     {
         public TemplateLabels()
-        {            
+        {
             templateLabelSets = new List<List<string>>();
             LabelList = new Regex(GetAcceptedCommands());
         }
@@ -29,7 +26,7 @@ namespace AUTA
                 if (templateLabels != null)
                 {
                     mError = true;
-                    Console.WriteLine("ERROR: Template Block Already has template labels");
+                    Console.WriteLine("ERROR: Template Block Already has template labels : " + lBlock.filePath + " on line : ", lBlock.lines[0]);
                     return null;
                 }
                 else
@@ -73,8 +70,13 @@ namespace AUTA
                         {
                             string lTemp = lMatches[i].Groups[1].Value;
                             lTemp = lTemp.Trim();
-                            lTemp = lRemoveBackslashes.Replace(lTemp, "$1");
+                            lTemp = lRemoveBackslashes.Replace(lTemp, "${1}");
                             lLabels.Add(lTemp);
+                        }
+                        if (templateLabelSets.Count > 0 && lLabels.Count != templateLabelSets[0].Count)
+                        {
+                            Console.WriteLine("ERROR: Label set size do not match previous label sets sizes : " + lBlock.filePath + " on line : " + lLine);
+                            mError = true;
                         }
                         templateLabelSets.Add(lLabels);
                     }
@@ -107,10 +109,9 @@ namespace AUTA
             return null;
         }
 
-
         public override bool ParseAUTAEnd(string lLine, string lTag)
         {
-            Regex lRegex = new Regex(DefaultAUTABegin()+"end");
+            Regex lRegex = new Regex(DefaultAUTABegin() + "end");
             return lRegex.IsMatch(lLine);
         }
 
@@ -138,7 +139,7 @@ namespace AUTA
 
         public List<string> DuplicateForLabels(List<string> lInput)
         {
-            if (templateLabels !=null && templateLabelSets !=null && templateLabelSets.Count > 0)
+            if (templateLabels != null && templateLabelSets != null && templateLabelSets.Count > 0)
             {
                 List<string> lResult = new List<string>();
                 foreach (var lSet in templateLabelSets)
@@ -148,7 +149,12 @@ namespace AUTA
                         string lProcessed = lLine;
                         for (int i = 0; i < templateLabels.Count; ++i)
                         {
-                            lProcessed = lLabelRegexes[i].Replace(lProcessed, "$1" + lSet[i] + "$2");
+                            //if (lDebugRegexes[i].IsMatch(lProcessed))
+                            //{
+                            //    Console.WriteLine("Debug");
+                            //}
+                            lProcessed = lLabelRegexes[i].Replace(lProcessed, "${1}" + lSet[i] + "${2}");
+                            lProcessed = lLabelRegexes[i].Replace(lProcessed, "${1}" + lSet[i] + "${2}");
                         }
                         lResult.Add(lProcessed);
                     }
@@ -166,8 +172,10 @@ namespace AUTA
             if (templateLabels != null)
             {
                 lLabelRegexes = new List<Regex>(templateLabels.Count);
+                lDebugRegexes = new List<Regex>();
                 foreach (var lLabel in templateLabels)
                 {
+                    //   lDebugRegexes.Add(new Regex(lLabel+"\\(" + lLabel));
                     lLabelRegexes.Add(new Regex("(^|[^a-zA-Z0-9_])" + lLabel + "([^a-zA-Z0-9_]|$)"));
                 }
             }
@@ -175,16 +183,16 @@ namespace AUTA
 
         public List<string> templateLabels;
         public List<List<string>> templateLabelSets;
-        Regex LabelList;
+        private Regex LabelList;
 
-        static Regex ExtractLabels = new Regex("[a-zA-Z_][a-zA-Z0-9_]*");
-        static Regex ExtractLabelContents = new Regex(@"((?:[^,]|\\,)*[^\\])(?:,|$)");
+        private static Regex ExtractLabels = new Regex("[a-zA-Z_][a-zA-Z0-9_]*");
+        private static Regex ExtractLabelContents = new Regex(@"((?:[^,]|\\,)*[^\\])(?:,|$)");
 
-        static Regex lLabelTags = new Regex(DefaultAUTABegin()+"label\\s+(.*)");
-        static Regex lEndMatch = new Regex(DefaultAUTABegin()+"end");
-        static Regex lRemoveBackslashes = new Regex(@"\\(.)");
+        private static Regex lLabelTags = new Regex(DefaultAUTABegin() + "label\\s+(.*)");
+        private static Regex lEndMatch = new Regex(DefaultAUTABegin() + "end");
+        private static Regex lRemoveBackslashes = new Regex(@"\\(.)");
 
-        List<Regex> lLabelRegexes;
+        private List<Regex> lLabelRegexes;
+        private List<Regex> lDebugRegexes;
     }
-    
 }

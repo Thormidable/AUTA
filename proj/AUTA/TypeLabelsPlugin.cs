@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
@@ -53,6 +50,7 @@ namespace AUTA
                 }
             }
         }
+
         public void CacheLine(string lLine)
         {
             Match lMatch = TypeSingleLine.Match(lLine);
@@ -64,15 +62,16 @@ namespace AUTA
                     case "type":
                         ExtractTypeLine(lMatch);
                         break;
+
                     case "blacklisttypes":
                         blackList.CacheLine(lLine);
                         break;
+
                     default:
                         mError = true;
                         Console.WriteLine("ERROR: Unrecognised Command passed to Types : " + lCommand);
                         break;
                 }
-
             }
         }
 
@@ -103,11 +102,10 @@ namespace AUTA
             }
         }
 
-
         public List<string> DuplicateForTypes(List<string> lInput)
         {
             if (templateType.Count > 0)
-            {                
+            {
                 List<string> lResult = new List<string>();
                 foreach (var lLine in lInput)
                 {
@@ -126,14 +124,13 @@ namespace AUTA
                             foreach (var lSet in templateType)
                             {
                                 Regex keyRegex = lKeyRegexes[keyCount];
-                                lProcessed = keyRegex.Replace(lProcessed, "$1 " + lSet.Value[lTypeValue[keyCount]] + " $2");
+                                lProcessed = keyRegex.Replace(lProcessed, "${1} " + lSet.Value[lTypeValue[keyCount]] + " ${2}");
                                 keyCount++;
                             }
                             lResult.Add(lProcessed);
                         }
 
                         lContinue = IncrementIterator(lBespokeIterationMaxValue);
-                        
                     }
                 }
                 return lResult;
@@ -193,8 +190,13 @@ namespace AUTA
                         {
                             foreach (var lSet in templateType)
                             {
+                                //if(lDebugRegexes[keyCount].IsMatch(lProcessed))
+                                //{
+                                //    Console.WriteLine("Debug");
+                                //}
                                 Regex keyRegex = lKeyRegexes[keyCount];
-                                lProcessed = keyRegex.Replace(lProcessed, "$1 " + lSet.Value[lTypeValue[keyCount]] + " $2");
+                                lProcessed = keyRegex.Replace(lProcessed, "${1}" + lSet.Value[lTypeValue[keyCount]] + "${2}");
+                                lProcessed = keyRegex.Replace(lProcessed, "${1}" + lSet.Value[lTypeValue[keyCount]] + "${2}");
                                 keyCount++;
                             }
                             lResult.Add(lProcessed);
@@ -202,7 +204,6 @@ namespace AUTA
                     }
 
                     lContinue = IncrementIterator(lIterationMaxValue);
-
                 }
                 return lResult;
             }
@@ -224,11 +225,12 @@ namespace AUTA
         protected void GenerateKeyRegexes()
         {
             lKeyRegexes = new List<Regex>();
+            lDebugRegexes = new List<Regex>();
             foreach (var lSet in templateType)
             {
-                lKeyRegexes.Add(new Regex("(^|[^a-zA-Z0-9_])" + lSet.Key + "([^a-zA-Z0-9_])"));
+                //   lDebugRegexes.Add(new Regex(lSet.Key+"\\(" + lSet.Key));
+                lKeyRegexes.Add(new Regex("(^|[^a-zA-Z0-9_])" + lSet.Key + "([^a-zA-Z0-9_]|$)"));
             }
-
         }
 
         protected void GenerateIteratorArray()
@@ -252,7 +254,6 @@ namespace AUTA
             lBespokeIterationMaxValue = new int[templateType.Count];
 
             GenerateIteratorArray();
-
         }
 
         public override void Clear()
@@ -265,8 +266,8 @@ namespace AUTA
         protected BlacklistPlugin blackList;
         public IDictionary<string, List<string>> templateType;
 
-        static Regex TypeSingleLine = new Regex(TypeSingleStringRegex());
-        static Regex ExtractTypes = new Regex(ExtractTypeRegex());
+        private static Regex TypeSingleLine = new Regex(TypeSingleStringRegex());
+        private static Regex ExtractTypes = new Regex(ExtractTypeRegex());
 
         protected List<string> lTypekeys;
         protected List<string> lResult;
@@ -274,7 +275,7 @@ namespace AUTA
         protected int[] lBespokeIterationMaxValue;
         protected int[] lTypeValue;
 
-        List<Regex> lKeyRegexes;
+        private List<Regex> lKeyRegexes;
+        private List<Regex> lDebugRegexes;
     }
-
 }

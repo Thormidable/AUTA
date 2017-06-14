@@ -5,29 +5,29 @@ using System.Text.RegularExpressions;
 
 namespace AUTA
 {
-    public class ScopeBlock : CommandInterface
+    public class FlagBlock : CommandInterface
     {
-        protected ScopeBlock()
+        protected FlagBlock()
         {
-            mScopes = new Dictionary<string, ScopeBlockBody>();
-            lExtraCommands = new Regex("\\s+scope\\s*=\\s*([a-zA-Z0-9_]+)");
-            scopeBlocks = 0;
+            mFlags = new Dictionary<string, FlagBlockBody>();
+            lExtraCommands = new Regex("\\s+flags\\s*=\\s*([a-zA-Z0-9_]+)");
+            flagBlocks = 0;
         }
 
-        ~ScopeBlock()
+        ~FlagBlock()
         {
             instance = null;
         }
 
-        public static ScopeBlock GetInstance()
+        public static FlagBlock GetInstance()
         {
-            if (instance == null) instance = new ScopeBlock();
+            if (instance == null) instance = new FlagBlock();
             return instance;
         }
 
         public override string GetAcceptedCommands()
         {
-            return DefaultAUTABegin() + "scopeblock\\s+([a-zA-Z0-9_]+)";
+            return DefaultAUTABegin() + "flagblock\\s+([a-zA-Z0-9_]+)";
         }
 
         public override bool IsAcceptedExtraCommands(string lLine)
@@ -45,15 +45,15 @@ namespace AUTA
         public override void CacheBlock(CommandBlock lBlock)
         {
             string lCommand = lBlock.elements[0].ToLower();
-            if (lCommand == "scopeblock")
+            if (lCommand == "flagblock")
             {
-                scopeBlocks++;
+                flagBlocks++;
                 string lExportIdent = lBlock.elements[1];
                 if (Program.IsValidIdent(lExportIdent))
                 {
-                    if (!mScopes.ContainsKey(lExportIdent))
+                    if (!mFlags.ContainsKey(lExportIdent))
                     {
-                        mScopes[lExportIdent] = new ScopeBlockBody(lBlock);
+                        mFlags[lExportIdent] = new FlagBlockBody(lBlock);
                     }
                     else
                     {
@@ -69,36 +69,26 @@ namespace AUTA
             return null;
         }
 
-        public ScopeBlockBody GetScope(string lScopeCommand)
+        public FlagBlockBody GetScope(string lScopeCommand)
         {
             var lMatch = lExtraCommands.Match(lScopeCommand);
             return GetScopeFromTag(lMatch.Groups[1].Value);
         }
 
-        public ScopeBlockBody GetScopeFromTag(string lKey)
+        public FlagBlockBody GetScopeFromTag(string lKey)
         {
-            if (mScopes.ContainsKey(lKey)) return mScopes[lKey];
+            if (mFlags.ContainsKey(lKey)) return mFlags[lKey];
             else
             {
                 mError = true;
-                Console.WriteLine("ERROR: Scope not Found :" + lKey);
+                Console.WriteLine("ERROR: Flag not Found :" + lKey);
                 return null;
             }
         }
 
-        public TemplateLabels GetGlobalLabel(string lScopeCommand)
-        {
-            return GetScope(lScopeCommand)?.GetLabels();
-        }
-
-        public TemplateTypes GetGlobalType(string lScopeCommand)
-        {
-            return GetScope(lScopeCommand)?.GetTypes();
-        }
-
         public override void CacheForProcessing()
         {
-            foreach (var function in mScopes)
+            foreach (var function in mFlags)
             {
                 function.Value.CacheForProcessing();
             }
@@ -106,26 +96,26 @@ namespace AUTA
 
         public override void Clear()
         {
-            mScopes.Clear();
-            scopeBlocks = 0;
+            mFlags.Clear();
+            flagBlocks = 0;
         }
 
         public override bool CheckErrors()
         {
-            if (mError == false) mError = mScopes.Any(x => x.Value.CheckErrors());
+            if (mError == false) mError = mFlags.Any(x => x.Value.CheckErrors());
             return mError;
         }
 
         public override void OutputResults()
         {
-            Console.WriteLine("Imported " + scopeBlocks + " scope blocks");
+            Console.WriteLine("Imported " + flagBlocks + " scope blocks");
         }
 
-        private Dictionary<string, ScopeBlockBody> mScopes;
+        private Dictionary<string, FlagBlockBody> mFlags;
 
-        private int scopeBlocks;
+        private int flagBlocks;
 
         private Regex lExtraCommands;
-        private static ScopeBlock instance = null;
+        private static FlagBlock instance = null;
     }
 }

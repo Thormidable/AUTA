@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
@@ -75,20 +72,23 @@ namespace AUTA
                             case "declare":
                                 lContents = mTemplates[lExportIdent].GenerateDeclareText(lBlock);
                                 break;
+
                             case "define":
                                 lContents = mTemplates[lExportIdent].GenerateDefineText(lBlock);
                                 break;
+
                             case "instance":
                                 lContents = mTemplates[lExportIdent].GenerateInstanceText(lBlock);
                                 break;
+
                             case "specialise":
                                 lContents = mTemplates[lExportIdent].GenerateSpecialisationText(lBlock);
                                 break;
+
                             default:
                                 return null;
                         }
                         return Program.ProcessExtraCommands(lBlock.lines[0], lContents.ToList());
-                    
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace AUTA
 
         public static string FunctionDeclarationRegex()
         {
-            string lDeclaration = "^" + TemplateInstantiationPlugin.TemplateDeclaration() + "?"+PreQualifiersRegex()+"?\\s*(" + TemplateInstantiationPlugin.TypeIdentReturn() + ")(" + TemplateInstantiationPlugin.NamespaceDeclaration() + ")(" + TemplateInstantiationPlugin.NameIdentRegex() + ")\\(([^)]*)\\)"+PostQualifiersRegex()+"?";
+            string lDeclaration = "^" + TemplateInstantiationPlugin.TemplateDeclaration() + "?" + PreQualifiersRegex() + "?\\s*(" + TemplateInstantiationPlugin.TypeIdentReturn() + ")(" + TemplateInstantiationPlugin.NamespaceDeclaration() + ")(" + TemplateInstantiationPlugin.NameIdentRegex() + ")\\(([^)]*)\\)" + PostQualifiersRegex() + "?";
             return lDeclaration;
         }
 
@@ -140,9 +140,10 @@ namespace AUTA
         {
             return "\\s*(template\\s*(" + TemplateBodyRegex() + "))";
         }
+
         public static string TypeIdentReturn()
         {
-            return "(?:"+ TypeIdent()+ "(?:(?:[&]|[*])*\\s+(?:[&]|[*])*))";
+            return "(?:" + TypeIdent() + "(?:(?:[&]|[*])*\\s+(?:[&]|[*])*))";
         }
 
         public static string TypeIdent()
@@ -167,8 +168,8 @@ namespace AUTA
 
         public static string NameIdentRegex()
         {
-            string FirstCharacter = "[a-zA-Z_]";
-            return "(?:" + FirstCharacter + "(?:[a-zA-Z0-9_]|" + HashConcatenate() + FirstCharacter + ")*)";
+            string FirstCharacter = "[a-zA-Z]";
+            return "(?:" + FirstCharacter + "(?:[a-zA-Z0-9_]|" + HashConcatenate() + "[a-zA-Z0-9_]" + ")*)";
         }
 
         public static string TemplateBodyRegex()
@@ -183,21 +184,21 @@ namespace AUTA
 
         public static string DefaultValue()
         {
-            return "(?:\\s*=[^,<(]+"+TemplateBodyRegex()+"?"+ParameterBodyRegex()+"?)";
+            return "(?:\\s*=[^,<(]+" + TemplateBodyRegex() + "?" + ParameterBodyRegex() + "?)";
         }
 
-
-        public static string  TemplateDefaultValue()
+        public static string TemplateDefaultValue()
         {
             return "(?:\\s*=[^,<(]+" + TemplateBodyRegex() + "?)";
         }
+
         public static string ValidateTemplateBlock()
         {
-            return "<(\\s*" + TypeIdent() + "\\s+" + NameIdentRegex() + TemplateDefaultValue()+"?\\s*,?)+>";
+            return "<(\\s*" + TypeIdent() + "\\s+" + NameIdentRegex() + TemplateDefaultValue() + "?\\s*,?)+>";
         }
 
         public IDictionary<string, TemplateBlock> mTemplates;
-        int functionExportBlocks;
-        int functionImportBlocks;
+        private int functionExportBlocks;
+        private int functionImportBlocks;
     }
 }

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
-  
     public class CodeReplicationPlugin : CommandInterface
     {
         public CodeReplicationPlugin()
@@ -43,7 +39,7 @@ namespace AUTA
                 {
                     if (!mTemplates.ContainsKey(lExportIdent))
                     {
-                        mTemplates[lExportIdent] = new CodeReplicationBlockPlugin(lBlock);                        
+                        mTemplates[lExportIdent] = new CodeReplicationBlockPlugin(lBlock);
                     }
                     else
                     {
@@ -66,7 +62,7 @@ namespace AUTA
                 string lExportIdent = lBlock.elements[1];
                 if (mTemplates.ContainsKey(lExportIdent))
                 {
-                    return Program.ProcessExtraCommands(lBlock.lines[0], mTemplates[lExportIdent].ProcessBlock(lBlock).ToList());                    
+                    return Program.ProcessExtraCommands(lBlock.lines[0], mTemplates[lExportIdent].ProcessBlock(lBlock).ToList());
                 }
                 else
                 {
@@ -87,7 +83,7 @@ namespace AUTA
 
         public override bool CheckErrors()
         {
-            if(mError == false) mError = mTemplates.Any(x => x.Value.CheckErrors());
+            if (mError == false) mError = mTemplates.Any(x => x.Value.CheckErrors());
             return mError;
         }
 
@@ -97,10 +93,9 @@ namespace AUTA
             Console.WriteLine("Imported " + replicationImportBlocks + " replication blocks");
         }
 
-        int replicationExportBlocks;
-        int replicationImportBlocks;
+        private int replicationExportBlocks;
+        private int replicationImportBlocks;
 
         public IDictionary<string, CodeReplicationBlockPlugin> mTemplates;
-
     }
 }

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
-{    
+{
     public abstract class CommandInterface
     {
         public CommandInterface()
         {
             mProcessPaths = new HashSet<string>();
         }
+
         public bool AcceptedBlock(CommandBlock lBlock)
         {
             return AcceptedLine(lBlock.lines[0]);
@@ -28,6 +26,7 @@ namespace AUTA
         {
             return false;
         }
+
         public virtual string[] ProcessExtraCommands(string lCommandLine, List<string> lOutput)
         {
             return lOutput.ToArray();
@@ -35,7 +34,6 @@ namespace AUTA
 
         public virtual void CacheForProcessing()
         {
-
         }
 
         public virtual CommandBlock ExtractAUTABlock(List<string> lines, int startIndex, string filePath)
@@ -69,7 +67,6 @@ namespace AUTA
             return null;
         }
 
-
         public static bool ParseAUTALine(string lLine)
         {
             Regex lRegEx = new Regex(DefaultAUTABegin() + "([a-zA-Z]+)\\s+([a-zA-Z0-9_]+)");
@@ -88,13 +85,13 @@ namespace AUTA
 
         public virtual bool ParseAUTAEnd(string lLine, string lTag)
         {
-            Regex lRegEx = new Regex(DefaultAUTABegin()+"end\\s+" + lTag);
+            Regex lRegEx = new Regex(DefaultAUTABegin() + "end\\s+" + lTag);
             return lRegEx.IsMatch(lLine);
         }
 
         public virtual string[] ParseAUTABlockStart(string lLine)
         {
-            Regex lRegEx = new Regex(DefaultAUTABegin()+ "([a-zA-Z]+)\\s+([a-zA-Z0-9_]+)");
+            Regex lRegEx = new Regex(DefaultAUTABegin() + "([a-zA-Z]+)\\s+([a-zA-Z0-9_]+)");
             Match lMatch = lRegEx.Match(lLine);
             if (lMatch.Success)
             {
@@ -112,10 +109,14 @@ namespace AUTA
         {
             for (int i = 0; i < lInput.Count; ++i)
             {
-                lInput[i] = lConcatanateRegex.Replace(lInput[i], "$1$2");
+                if (lConcatanateRegex.IsMatch(lInput[i]))
+                {
+                    lInput[i] = lConcatanateRegex.Replace(lInput[i], "${1}${2}");
+                }
             }
             return lInput;
         }
+
         public abstract string GetAcceptedCommands();
 
         public abstract void CacheBlock(CommandBlock lBlock);
@@ -124,7 +125,6 @@ namespace AUTA
 
         public virtual void OutputResults()
         {
-
         }
 
         public virtual void Clear()

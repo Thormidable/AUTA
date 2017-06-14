@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
-
     public class TemplateFunctions : CommandInterface
     {
         public TemplateFunctions()
         {
-            lFunctionDeclarationRegex = new Regex(TemplateInstantiationPlugin.FunctionDeclarationRegex()+"(.*)");
+            lFunctionDeclarationRegex = new Regex(TemplateInstantiationPlugin.FunctionDeclarationRegex() + "(.*)");
             lCleanConcatination = new Regex("\\s*##\\s*");
             functionBody = new List<string>();
             lValidateTemplateBody = new Regex(TemplateInstantiationPlugin.ValidateTemplateBlock());
@@ -25,7 +22,6 @@ namespace AUTA
 
         public override void CacheBlock(CommandBlock lBlock)
         {
-
         }
 
         public int CacheBlock(List<string> paths, int startIndex, string filePath)
@@ -61,14 +57,14 @@ namespace AUTA
                     lStarted = true;
                 }
                 lCounter -= functionbodyLineOne.Count(x => x == '}');
-                if(lStarted && lCounter == 0)
+                if (lStarted && lCounter == 0)
                 {
                     functionBody = new List<string>();
                     functionBody.Add(functionbodyLineOne);
                     return startIndex;
                 }
 
-                for (int i = startIndex+1; i < paths.Count; ++i)
+                for (int i = startIndex + 1; i < paths.Count; ++i)
                 {
                     lCounter += paths[i].Count(x => x == '{');
                     lCounter -= paths[i].Count(x => x == '}');
@@ -87,8 +83,8 @@ namespace AUTA
                         if (lStarted == true)
                         {
                             functionBody = paths.GetRange(startIndex + 1, i - startIndex).ToList();
-                            if(functionbodyLineOne != "") functionBody.Insert(0, functionbodyLineOne);
-                            
+                            if (functionbodyLineOne != "") functionBody.Insert(0, functionbodyLineOne);
+
                             return i;
                         }
                     }
@@ -118,9 +114,9 @@ namespace AUTA
         public List<string> GenerateDefinition()
         {
             string lEntry;
-            if (functionTemplateTypes != null && functionTemplateTypes != "") lEntry= "template " + TemplateBlock.StripDefaultParams(functionTemplateTypes) + functionReturnPreQualifiers + " " + functionReturnTypes + " " + functionNamespace + functionName + "(" + TemplateBlock.StripDefaultParams(functionParameters) + ")" + functionPostQualifiers;
+            if (functionTemplateTypes != null && functionTemplateTypes != "") lEntry = "template " + TemplateBlock.StripDefaultParams(functionTemplateTypes) + functionReturnPreQualifiers + " " + functionReturnTypes + " " + functionNamespace + functionName + "(" + TemplateBlock.StripDefaultParams(functionParameters) + ")" + functionPostQualifiers;
             else lEntry = functionReturnPreQualifiers + " " + functionReturnTypes + " " + functionNamespace + functionName + "(" + TemplateBlock.StripDefaultParams(functionParameters) + ")" + functionPostQualifiers;
-                        
+
             if (functionbodyLineOne != "")
             {
                 List<string> lResult = new List<string>();
@@ -149,18 +145,18 @@ namespace AUTA
             {
                 specialisationEntry = functionReturnPreQualifiers + " " + functionReturnTypes + " " + functionNamespace + functionName + "(" + TemplateBlock.StripDefaultParams(functionParameters) + ")" + functionPostQualifiers;
             }
-            
+
             if (functionbodyLineOne != "")
             {
                 lResult.Add(specialisationEntry + functionbodyLineOne);
-                if(functionBody.Count > 1) lResult.AddRange(functionBody.GetRange(1,functionBody.Count-1));
+                if (functionBody.Count > 1) lResult.AddRange(functionBody.GetRange(1, functionBody.Count - 1));
             }
             else
             {
                 lResult.Add(specialisationEntry);
                 lResult.AddRange(functionBody);
             }
-           
+
             return lResult;
         }
 
@@ -229,8 +225,8 @@ namespace AUTA
         public string functionName;
         public string functionParameters;
         public string functionbodyLineOne;
-        Regex lFunctionDeclarationRegex;
-        Regex lCleanConcatination;
-        Regex lValidateTemplateBody;
+        private Regex lFunctionDeclarationRegex;
+        private Regex lCleanConcatination;
+        private Regex lValidateTemplateBody;
     }
 }

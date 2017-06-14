@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
@@ -17,7 +13,7 @@ namespace AUTA
 
         public override string GetAcceptedCommands()
         {
-            return DefaultAUTABegin()+"blacklist[^=]==[^,],";
+            return DefaultAUTABegin() + "blacklist[^=]==[^,],";
         }
 
         public override void CacheBlock(CommandBlock lBlock)
@@ -27,10 +23,11 @@ namespace AUTA
                 CacheLine(lLine);
             }
         }
+
         public void CacheLine(string lBlackListString)
         {
             var lMatches = ExtractBlackListPairsRegex.Matches(lBlackListString);
-            if(lMatches.Count > 0)
+            if (lMatches.Count > 0)
             {
                 var lDictionary = new Dictionary<string, string>();
                 foreach (Match lMatch in lMatches)
@@ -75,20 +72,17 @@ namespace AUTA
             return null;
         }
 
-                 
-    public override void CacheForProcessing()
-    {
+        public override void CacheForProcessing()
+        {
+        }
 
-    }
+        public override void Clear()
+        {
+            base.Clear();
+            blackList.Clear();
+        }
 
-    public override void Clear()
-    {
-        base.Clear();
-        blackList.Clear();
+        protected List<Dictionary<string, string>> blackList;
+        private Regex ExtractBlackListPairsRegex;
     }
-    
-    protected List<Dictionary<string, string>> blackList;
-    Regex ExtractBlackListPairsRegex;    
-}
-    
 }

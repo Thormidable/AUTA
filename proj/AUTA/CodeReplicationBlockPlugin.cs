@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AUTA
 {
     public class CodeReplicationBlockPlugin : CommandInterface
     {
-
         public CodeReplicationBlockPlugin(CommandBlock lBlock)
         {
             codeTypes = new TemplateTypes();
             codeLabels = new TemplateLabels();
-            codeBlocks = new List<CodeBlockBodyPlugin>();            
+            codeBlocks = new List<CodeBlockBodyPlugin>();
             CacheBlock(lBlock);
         }
 
@@ -92,11 +88,12 @@ namespace AUTA
         public override bool CheckErrors()
         {
             if (mError == false) mError = codeBlocks.Any(x => x.CheckErrors());
-            return mError;   
+            if (mError == false) mError = codeLabels.CheckErrors();
+            return mError;
         }
-        
-        TemplateLabels codeLabels;
-        TemplateTypes codeTypes;
-        List<CodeBlockBodyPlugin> codeBlocks;
+
+        private TemplateLabels codeLabels;
+        private TemplateTypes codeTypes;
+        private List<CodeBlockBodyPlugin> codeBlocks;
     }
 }
