@@ -1,0 +1,8 @@
+/*
+#AUTA export Group1
+TypeProxyOf < Object1 >::GetTypeProxy();
+# AUTA end Group1
+*/
+
+//#AUTA import Group1
+//#AUTA end Group1
