@@ -195,6 +195,7 @@ namespace AUTA
 
         private static int Main(string[] args)
         {
+            Console.WriteLine("===========================AUTA START===========================");
             string lTargetDir = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
             if (!Directory.Exists(lTargetDir))
             {
@@ -228,7 +229,7 @@ namespace AUTA
             {
                 Console.WriteLine("DONE");
             }
-
+            Console.WriteLine("===========================AUTA END=============================");
             return mError ? 1 : 0;
         }
 

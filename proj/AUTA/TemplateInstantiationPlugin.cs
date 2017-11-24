@@ -44,7 +44,7 @@ namespace AUTA
                     }
                     else
                     {
-                        Console.WriteLine("ERROR: AUTA ident already exists: " + lExportIdent);
+                        Console.WriteLine("ERROR: AUTA ident already exists: " + lExportIdent + ". File Path: " + lBlock.filePath.ToString());
                         mError = true;
                     }
                 }
