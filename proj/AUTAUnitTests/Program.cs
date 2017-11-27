@@ -13,10 +13,11 @@ namespace AUTAUnitTests
         {
             TestFile.ClearSourceFiles();
 
+            TestExtraCommandsScopeTypes.RunTest();
             TestExportImport.RunTest();
             TestBadBlocks.RunTest();
             TestExtraCommandsFlags.RunTest();
-            TestExtraCommandsScope.RunTest();
+            TestExtraCommandsScopeLabels.RunTest();
 
             return TestFile.OutputResults();
         }

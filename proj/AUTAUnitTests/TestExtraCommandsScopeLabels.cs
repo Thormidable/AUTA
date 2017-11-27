@@ -7,7 +7,7 @@ using static AUTAUnitTests.TestFile;
 
 namespace AUTAUnitTests
 {
-    internal class TestExtraCommandsScope
+    internal class TestExtraCommandsScopeLabels
     {
         private static TestFile TestScopeBlockLabelsCreate = new TestFile(@"/*
 #AUTA scopeblock EACH_UINT_TYPE
@@ -182,14 +182,14 @@ TypeProxyOf<Object<UInt64>>::GetTypeProxy();
 
         public static void RunTest()
         {
-            TestFile.RunTest("Test Create Scope Block", TestScopeBlockLabelsCreate);
-            TestFile.RunTest("Test Create Scope block combining scope blocks", TestScopeBlockLabelsCombine);
-            TestFile.RunTest("Test use Scope Block", TestScopeBlockLabelsUse);
-            TestFile.RunTest("Test use Combined Scope Blocks", TestScopeBlockLabelsUseCombined);
-            TestFile.RunTest("Test use undeclared scope block", TestScopeBlockInvalidScopeBlock, 1);
+            TestFile.RunTest("Test Create Scope Block Labels", TestScopeBlockLabelsCreate);
+            TestFile.RunTest("Test Create Scope block combining scope blocks Labels", TestScopeBlockLabelsCombine);
+            TestFile.RunTest("Test use Scope Block Labels", TestScopeBlockLabelsUse);
+            TestFile.RunTest("Test use Combined Scope Blocks Labels", TestScopeBlockLabelsUseCombined);
+            TestFile.RunTest("Test use undeclared scope block Labels", TestScopeBlockInvalidScopeBlock, 1);
 
             List<TestFile> lList = new List<TestFile>() { TestScopeBlockLabelsUseCombinedAcrossFiles1, TestScopeBlockLabelsUseCombinedAcrossFiles2, TestScopeBlockLabelsUseCombinedAcrossFiles3 };
-            TestFile.RunTest("Test use Scope Block Across Files", lList);
+            TestFile.RunTest("Test use Scope Block Labels Across Files", lList);
         }
     }
 }

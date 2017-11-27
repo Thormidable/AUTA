@@ -47,7 +47,8 @@
     <Compile Include="TestExportImport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestExtraCommandsScope.cs" />
+    <Compile Include="TestExtraCommandsScopeLabels.cs" />
+    <Compile Include="TestExtraCommandsScopeTypes.cs" />
     <Compile Include="TestFileFunctions.cs" />
     <Compile Include="TestExtraCommandsFlags.cs" />
   </ItemGroup>
