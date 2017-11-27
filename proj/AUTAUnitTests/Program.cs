@@ -11,8 +11,12 @@ namespace AUTAUnitTests
     {
         private static int Main(string[] args)
         {
+            TestFile.ClearSourceFiles();
+
             TestExportImport.RunTest();
             TestBadBlocks.RunTest();
+            TestExtraCommandsFlags.RunTest();
+            TestExtraCommandsScope.RunTest();
 
             return TestFile.OutputResults();
         }

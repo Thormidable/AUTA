@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace AUTA
@@ -59,26 +60,28 @@ namespace AUTA
                 lNewBlock.elements = elements;
                 lNewBlock.filePath = filePath;
 
-                int lRecursionCounter = 0;
+                List<CommandInterface> mRecursivePlugins = new List<CommandInterface>();
+                mRecursivePlugins.Add(this);
 
                 for (int index = startIndex + 1; index < lines.Count; ++index)
                 {
                     var lLine = lines[index];
                     lNewBlock.lines.Add(lLine);
-                    if (ParseAUTABlockStart(lines[index]) != null) lRecursionCounter++;
-                    if (ParseAUTAEnd(lLine, lNewBlock.elements[1]))
+                    var plugin = Program.GetPluginsList().FirstOrDefault(x => x.AcceptedLine(lLine));
+                    if (plugin?.ParseAUTABlockStart(lines[index]) != null) mRecursivePlugins.Add(plugin);
+                    if (mRecursivePlugins.Last().ParseAUTAEnd(lLine, lNewBlock.elements[1]))
                     {
-                        lRecursionCounter--;
-                        if (lRecursionCounter == 0)
+                        mRecursivePlugins.RemoveAt(mRecursivePlugins.Count - 1);
+                        if (mRecursivePlugins.Count == 0)
                         {
                             lNewBlock.endIndex = index;
                             return lNewBlock;
                         }
                     }
                 }
-                if (lRecursionCounter == 0) Console.WriteLine("ERROR: AUTA block never terminated: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
-                if (lRecursionCounter > 0) Console.WriteLine("ERROR: AUTA block contained un terminated AUTA blocks: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
-                if (lRecursionCounter < 0) Console.WriteLine("ERROR: AUTA block contained too many terminating AUTA commands: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (mRecursivePlugins.Count == 0) Console.WriteLine("ERROR: AUTA block never terminated: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (mRecursivePlugins.Count > 0) Console.WriteLine("ERROR: AUTA block contained un terminated AUTA blocks: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (mRecursivePlugins.Count < 0) Console.WriteLine("ERROR: AUTA block contained too many terminating AUTA commands: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
             }
             return null;
         }

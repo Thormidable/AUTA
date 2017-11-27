@@ -243,6 +243,11 @@ namespace AUTA
             return mError ? 1 : 0;
         }
 
+        public static List<CommandInterface> GetPluginsList()
+        {
+            return mPlugins;
+        }
+
         private static int totalFiles = 0;
         private static int filesWithAUTABlocks = 0;
         private static int changedFiles = 0;

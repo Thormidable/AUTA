@@ -16,7 +16,8 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 */
 
 //#AUTA import Group1
-//#AUTA end Group1", @"/*
+//#AUTA end Group1", 
+@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -101,11 +102,7 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
-*/", @"/*
-#AUTA export Group1
-TypeProxyOf < Object1 >::GetTypeProxy();
-#AUTA end Group1
-*/", "./TestExport.h");
+*/", "", "./TestExport.h");
 
         private static TestFile BasicMultiFileImportFile2 = new TestFile(@"//#AUTA import Group1
 //#AUTA end Group1",

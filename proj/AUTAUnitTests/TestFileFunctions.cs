@@ -34,6 +34,7 @@ namespace AUTAUnitTests
 
         public bool CheckFile()
         {
+            if (mExpectedContents == "") mExpectedContents = mStartingContents;
             using (StreamReader sr = File.OpenText(mFilePath))
             {
                 var result = Regex.Split(mExpectedContents, "\r\n|\r|\n");
@@ -58,7 +59,12 @@ namespace AUTAUnitTests
 
         public void CleanupFile()
         {
-            if (File.Exists(mFilePath)) File.Delete(mFilePath);
+            CleanupFile(mFilePath);
+        }
+
+        public static void CleanupFile(string lFilePath)
+        {
+            if (File.Exists(lFilePath)) File.Delete(lFilePath);
         }
 
         public static void RunTest(string lTestName, TestFile lFiles, int lErrorCodeExpected = 0)
@@ -98,6 +104,29 @@ namespace AUTAUnitTests
                 }
             }
             foreach (var lFile in lFiles) lFile.CleanupFile();
+        }
+
+        public static void ClearSourceFiles()
+        {
+            var lFileList = GetSourceFiles();
+            foreach (var lFile in lFileList)
+            {
+                CleanupFile(lFile);
+            }
+        }
+
+        public static string[] GetSourceFiles(string lTargetDir = "./")
+        {
+            var lHeaderPaths = Directory.GetFiles(lTargetDir, "*.h", SearchOption.AllDirectories);
+            var lSourcePaths = Directory.GetFiles(lTargetDir, "*.cpp", SearchOption.AllDirectories);
+            var lCudaSourcePaths = Directory.GetFiles(lTargetDir, "*.cu", SearchOption.AllDirectories);
+
+            var lPaths = new string[lHeaderPaths.Length + lSourcePaths.Length + lCudaSourcePaths.Length];
+            Array.Copy(lHeaderPaths, lPaths, lHeaderPaths.Length);
+            Array.Copy(lSourcePaths, 0, lPaths, lHeaderPaths.Length, lSourcePaths.Length);
+            Array.Copy(lCudaSourcePaths, 0, lPaths, lHeaderPaths.Length + lSourcePaths.Length, lCudaSourcePaths.Length);
+
+            return lPaths;
         }
 
         public static int OutputResults()
