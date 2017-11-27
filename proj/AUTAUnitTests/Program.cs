@@ -11,22 +11,10 @@ namespace AUTAUnitTests
     {
         private static int Main(string[] args)
         {
-            bool lResult = true;
-            lResult = lResult && TestExportImport.RunTest();
-            lResult = lResult && TestBadBlocks.RunTest();
+            TestExportImport.RunTest();
+            TestBadBlocks.RunTest();
 
-            if (lResult)
-            {
-                Console.Write("Success");
-                Console.ReadKey();
-                return 0;
-            }
-            else
-            {
-                Console.Write("Failed");
-                Console.ReadKey();
-                return 1;
-            }
+            return TestFile.OutputResults();
         }
     }
 }

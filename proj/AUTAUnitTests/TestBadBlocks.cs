@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static AUTAUnitTests.TestFileFunctions;
+using static AUTAUnitTests.TestFile;
 
 namespace AUTAUnitTests
 {
     internal class TestBadBlocks
     {
-        private static string MissingEndStatementInput = @"/*
+        private static TestFile lMissingEndStatement = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group2
@@ -17,9 +17,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1
 //#AUTA end Group1
-";
+");
 
-        private static string NoMatchingGroup = @"/*
+        private static TestFile NoMatchingGroup = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -27,9 +27,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group2
 //#AUTA end Group2
-";
+");
 
-        private static string InvalidAUTACommand = @"/*
+        private static TestFile InvalidAUTACommand = new TestFile(@"/*
 #AUTA error Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -37,9 +37,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1
 //#AUTA end Group1
-";
+");
 
-        private static string InvalidAUTACommandImport = @"/*
+        private static TestFile InvalidAUTACommandImport = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -47,9 +47,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA importer Group1
 //#AUTA end Group1
-";
+");
 
-        private static string InvalidAUTACommandScopeMissing = @"/*
+        private static TestFile InvalidAUTACommandScopeMissing = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -57,9 +57,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1 : scope = New
 //#AUTA end Group1
-";
+");
 
-        private static string InvalidAUTACommandFlagsMissing = @"/*
+        private static TestFile InvalidAUTACommandFlagsMissing = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -67,9 +67,9 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1 : flags = New
 //#AUTA end Group1
-";
+");
 
-        private static string InvalidAUTACommandFlagsPartial = @"/*
+        private static TestFile InvalidAUTACommandFlagsPartial = new TestFile(@"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
 #AUTA end Group1
@@ -77,20 +77,28 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1 : flags
 //#AUTA end Group1
-";
+");
 
-        public static bool RunTest()
+        private static TestFile InvalidAUTAExtraCommand = new TestFile(@"/*
+#AUTA export Group1
+TypeProxyOf < Object1 >::GetTypeProxy();
+#AUTA end Group1
+*/
+
+//#AUTA import Group1 : InvalidCommand = Group1
+//#AUTA end Group1
+");
+
+        public static void RunTest()
         {
-            bool lResult = true;
-            lResult = TestFileFunctions.RunAUTA("Missing End Statement", MissingEndStatementInput, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Reading No Matching Group", NoMatchingGroup, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Invalid AUTA Command export", InvalidAUTACommand, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Invalid AUTA Command import", InvalidAUTACommandImport, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Invalid AUTA Command Missing scope", InvalidAUTACommandScopeMissing, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Invalid AUTA Command Missing flags", InvalidAUTACommandFlagsMissing, 1) && lResult;
-            lResult = TestFileFunctions.RunAUTA("Invalid AUTA Command partial flags", InvalidAUTACommandFlagsPartial, 1) && lResult;
-
-            return lResult;
+            TestFile.RunTest("Missing End Statement", lMissingEndStatement, 1);
+            TestFile.RunTest("Reading No Matching Group", NoMatchingGroup, 1);
+            TestFile.RunTest("Invalid AUTA Command export", InvalidAUTACommand, 1);
+            TestFile.RunTest("Invalid AUTA Command import", InvalidAUTACommandImport, 1);
+            TestFile.RunTest("Invalid AUTA Command Missing scope", InvalidAUTACommandScopeMissing, 1);
+            TestFile.RunTest("Invalid AUTA Command Missing flags", InvalidAUTACommandFlagsMissing, 1);
+            TestFile.RunTest("Invalid AUTA Command partial flags", InvalidAUTACommandFlagsPartial, 1);
+            TestFile.RunTest("Invalid AUTA Invalid Extra Command", InvalidAUTAExtraCommand, 1);
         }
     }
 }

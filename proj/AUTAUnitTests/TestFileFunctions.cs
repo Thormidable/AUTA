@@ -9,23 +9,34 @@ using System.Diagnostics;
 
 namespace AUTAUnitTests
 {
-    internal class TestFileFunctions
+    internal class TestFile
     {
-        public static void CreateFile(string lPath, string lContents)
+        public TestFile(string lStartingContents, string lExpectedContents = "", string lFiles = "./Test.h")
         {
-            if (File.Exists(lPath)) File.Delete(lPath);
-            using (FileStream fs = File.Create(lPath))
+            mStartingContents = lStartingContents;
+            mExpectedContents = lExpectedContents;
+            mFilePath = lFiles;
+        }
+
+        ~TestFile()
+        {
+        }
+
+        public void CreateFile()
+        {
+            if (File.Exists(mFilePath)) File.Delete(mFilePath);
+            using (FileStream fs = File.Create(mFilePath))
             {
-                Byte[] info = new UTF8Encoding(true).GetBytes(lContents);
+                Byte[] info = new UTF8Encoding(true).GetBytes(mStartingContents);
                 fs.Write(info, 0, info.Length);
             }
         }
 
-        public static bool CheckFile(string lPath, string lExpectedContents)
+        public bool CheckFile()
         {
-            using (StreamReader sr = File.OpenText(lPath))
+            using (StreamReader sr = File.OpenText(mFilePath))
             {
-                var result = Regex.Split(lExpectedContents, "\r\n|\r|\n");
+                var result = Regex.Split(mExpectedContents, "\r\n|\r|\n");
                 string lCurrentLine = "";
                 int lLine = 0;
                 while ((lCurrentLine = sr.ReadLine()) != null)
@@ -40,41 +51,70 @@ namespace AUTAUnitTests
             }
         }
 
-        public static bool RunTest(string lTestName, string lInput, string lExpectedOutput)
+        public string GetFileName()
         {
-            string lFileName = "./Test.h";
-            return RunTest(lTestName, lInput, lExpectedOutput, lFileName);
+            return mFilePath;
         }
 
-        public static bool RunTest(string lTestName, string lInput, string lExpectedOutput, string lFileName)
+        public void CleanupFile()
         {
-            if (!RunAUTA(lTestName, lInput, lFileName, 0)) return false;
-            if (!CheckFile(lFileName, lExpectedOutput))
-            {
-                Console.WriteLine("FAILED: AUTA result did not match expected");
-                return false;
-            }
-            return true;
+            if (File.Exists(mFilePath)) File.Delete(mFilePath);
         }
 
-        public static bool RunAUTA(string lTestName, string lInput, int lErrorCodeExpected)
+        public static void RunTest(string lTestName, TestFile lFiles, int lErrorCodeExpected = 0)
         {
-            string lFileName = "./Test.h";
-            return RunAUTA(lTestName, lInput, lFileName, lErrorCodeExpected);
+            List<TestFile> lFileList = new List<TestFile>();
+            lFileList.Add(lFiles);
+            RunTest(lTestName, lFileList, lErrorCodeExpected);
         }
 
-        public static bool RunAUTA(string lTestName, string lInput, string lFileName, int lErrorCodeExpected)
+        public static void RunTest(string lTestName, List<TestFile> lFiles, int lErrorCodeExpected = 0)
         {
+            TestsRun++;
+            foreach (var lFile in lFiles) lFile.CreateFile();
+
             Console.WriteLine("Starting test :" + lTestName);
-            CreateFile(lFileName, lInput);
             Process lProcess = Process.Start("AUTA.exe");
             lProcess.WaitForExit();
             if (lProcess.ExitCode != lErrorCodeExpected)
             {
                 Console.WriteLine("FAILED: AUTA returned an error code of " + lProcess.ExitCode.ToString() + " when an error code  of " + lErrorCodeExpected.ToString() + " was expected.");
-                return false;
+                TestsFailed++;
             }
-            return true;
+            else
+            {
+                if (lErrorCodeExpected == 0)
+                {
+                    bool lAnyFailed = false;
+                    foreach (var lFile in lFiles)
+                    {
+                        if (!lFile.CheckFile())
+                        {
+                            Console.WriteLine("FAILED: AUTA output failed for file: " + lFile.GetFileName());
+                            lAnyFailed = true;
+                        }
+                    }
+                    if (lAnyFailed) TestsFailed++;
+                }
+            }
+            foreach (var lFile in lFiles) lFile.CleanupFile();
         }
-    }
+
+        public static int OutputResults()
+        {
+            Console.WriteLine(TestsRun.ToString() + " tests Run");
+            Console.WriteLine(TestsFailed.ToString() + " tests Failed");
+            if (TestsFailed > 0) Console.WriteLine("FAILED");
+            else Console.WriteLine("SUCCESS");
+            var lResult = Console.ReadKey();
+            return TestsFailed;
+        }
+
+        private string mStartingContents;
+        private string mExpectedContents;
+        private string mFilePath;
+
+        private static int TestsRun = 0;
+        private static int TestsFailed = 0;
+    };
 }
