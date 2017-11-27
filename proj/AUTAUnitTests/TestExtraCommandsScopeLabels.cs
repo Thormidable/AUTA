@@ -69,6 +69,37 @@ TypeProxyOf<Object<UInt32>>::GetTypeProxy();
 TypeProxyOf<Object<UInt64>>::GetTypeProxy();
 //#AUTA end Group1");
 
+        private static TestFile TestScopeBlockMultiLabelsUse = new TestFile(@"/*
+#AUTA scopeblock EACH_UINT_TYPE
+#AUTA labels T, OP_NAME
+#AUTA label UInt32, ThirtyTwo
+#AUTA label UInt64, SixtyFour
+#AUTA end labels
+#AUTA end EACH_UINT_TYPE */
+/*
+#AUTA export Group1
+TypeProxyOf<Object<T,'OP_NAME'>>::GetTypeProxy();
+#AUTA end Group1
+*/
+//#AUTA import Group1 scope = EACH_UINT_TYPE
+//#AUTA end Group1",
+@"/*
+#AUTA scopeblock EACH_UINT_TYPE
+#AUTA labels T, OP_NAME
+#AUTA label UInt32, ThirtyTwo
+#AUTA label UInt64, SixtyFour
+#AUTA end labels
+#AUTA end EACH_UINT_TYPE */
+/*
+#AUTA export Group1
+TypeProxyOf<Object<T,'OP_NAME'>>::GetTypeProxy();
+#AUTA end Group1
+*/
+//#AUTA import Group1 scope = EACH_UINT_TYPE
+TypeProxyOf<Object<UInt32,'ThirtyTwo'>>::GetTypeProxy();
+TypeProxyOf<Object<UInt64,'SixtyFour'>>::GetTypeProxy();
+//#AUTA end Group1");
+
         private static TestFile TestScopeBlockInvalidScopeBlock = new TestFile(@"/*
 #AUTA scopeblock EACH_UINT_TYPE
 #AUTA labels T
@@ -185,6 +216,7 @@ TypeProxyOf<Object<UInt64>>::GetTypeProxy();
             TestFile.RunTest("Test Create Scope Block Labels", TestScopeBlockLabelsCreate);
             TestFile.RunTest("Test Create Scope block combining scope blocks Labels", TestScopeBlockLabelsCombine);
             TestFile.RunTest("Test use Scope Block Labels", TestScopeBlockLabelsUse);
+            TestFile.RunTest("Test use Scope Block Multi Labels", TestScopeBlockMultiLabelsUse);
             TestFile.RunTest("Test use Combined Scope Blocks Labels", TestScopeBlockLabelsUseCombined);
             TestFile.RunTest("Test use undeclared scope block Labels", TestScopeBlockInvalidScopeBlock, 1);
 
