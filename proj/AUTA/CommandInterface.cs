@@ -22,6 +22,13 @@ namespace AUTA
             return regEx.IsMatch(lLine);
         }
 
+        public static bool IsEmptyExtraCommand(string lLine)
+        {
+            Regex lRegEx = new Regex(DefaultAUTABegin() + "([a-zA-Z]+)\\s+([a-zA-Z0-9_]+)\\s+(.+)");
+            Match lMatch = lRegEx.Match(lLine);
+            return !lMatch.Success;
+        }
+
         public virtual bool IsAcceptedExtraCommands(string lCommandLine)
         {
             return false;
@@ -52,17 +59,26 @@ namespace AUTA
                 lNewBlock.elements = elements;
                 lNewBlock.filePath = filePath;
 
+                int lRecursionCounter = 0;
+
                 for (int index = startIndex + 1; index < lines.Count; ++index)
                 {
                     var lLine = lines[index];
                     lNewBlock.lines.Add(lLine);
+                    if (ParseAUTABlockStart(lines[index]) != null) lRecursionCounter++;
                     if (ParseAUTAEnd(lLine, lNewBlock.elements[1]))
                     {
-                        lNewBlock.endIndex = index;
-                        return lNewBlock;
+                        lRecursionCounter--;
+                        if (lRecursionCounter == 0)
+                        {
+                            lNewBlock.endIndex = index;
+                            return lNewBlock;
+                        }
                     }
                 }
-                Console.WriteLine("ERROR: AUTA block never terminated: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (lRecursionCounter == 0) Console.WriteLine("ERROR: AUTA block never terminated: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (lRecursionCounter > 0) Console.WriteLine("ERROR: AUTA block contained un terminated AUTA blocks: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
+                if (lRecursionCounter < 0) Console.WriteLine("ERROR: AUTA block contained too many terminating AUTA commands: " + filePath + ", line: " + startIndex.ToString() + " : " + lines[startIndex]);
             }
             return null;
         }

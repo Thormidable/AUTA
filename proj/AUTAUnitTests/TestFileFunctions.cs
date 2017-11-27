@@ -51,7 +51,7 @@ namespace AUTAUnitTests
             if (!RunAUTA(lTestName, lInput, lFileName, 0)) return false;
             if (!CheckFile(lFileName, lExpectedOutput))
             {
-                Console.Write("AUTA result did not match expected:" + lInput);
+                Console.WriteLine("FAILED: AUTA result did not match expected");
                 return false;
             }
             return true;
@@ -71,7 +71,7 @@ namespace AUTAUnitTests
             lProcess.WaitForExit();
             if (lProcess.ExitCode != lErrorCodeExpected)
             {
-                Console.Write("AUTA returned an error code of " + lProcess.ExitCode.ToString() + " when an error code  of " + lErrorCodeExpected.ToString() + " was expected:" + lInput);
+                Console.WriteLine("FAILED: AUTA returned an error code of " + lProcess.ExitCode.ToString() + " when an error code  of " + lErrorCodeExpected.ToString() + " was expected.");
                 return false;
             }
             return true;

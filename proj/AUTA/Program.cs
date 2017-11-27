@@ -33,11 +33,21 @@ namespace AUTA
 
         public static string[] ProcessExtraCommands(string lLine, List<string> lOutput)
         {
-            foreach (var lPlugin in mPlugins)
+            if (!CommandInterface.IsEmptyExtraCommand(lLine))
             {
-                if (lPlugin.IsAcceptedExtraCommands(lLine))
+                bool FoundCommand = false;
+                foreach (var lPlugin in mPlugins)
                 {
-                    lOutput = lPlugin.ProcessExtraCommands(lLine, lOutput).ToList();
+                    if (lPlugin.IsAcceptedExtraCommands(lLine))
+                    {
+                        lOutput = lPlugin.ProcessExtraCommands(lLine, lOutput).ToList();
+                        FoundCommand = true;
+                    }
+                }
+                if (FoundCommand == false)
+                {
+                    Console.WriteLine("ERROR: Invalid Extra Command Text : " + lLine);
+                    mError = true;
                 }
             }
             return lOutput.ToArray();

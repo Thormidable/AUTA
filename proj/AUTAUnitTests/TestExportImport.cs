@@ -31,7 +31,7 @@ TypeProxyOf < Object1 >::GetTypeProxy();
         public static bool RunTest()
         {
             bool lResult = true;
-            lResult = lResult && TestFileFunctions.RunTest("Basic Import / Export", BasicInput, BasicOutput);
+            lResult = TestFileFunctions.RunTest("Basic Import / Export", BasicInput, BasicOutput) && lResult;
             return lResult;
         }
     }
