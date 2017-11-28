@@ -16,7 +16,7 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 */
 
 //#AUTA import Group1
-//#AUTA end Group1", 
+//#AUTA end Group1",
 @"/*
 #AUTA export Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
@@ -25,6 +25,24 @@ TypeProxyOf < Object1 >::GetTypeProxy();
 
 //#AUTA import Group1
 TypeProxyOf < Object1 >::GetTypeProxy();
+//#AUTA end Group1");
+
+        private static TestFile BasicConcatinationTest = new TestFile(@"/*
+#AUTA export Group1
+TypeProxyOf ## < ## Object1 ##> ##::GetTypeProxy();
+#AUTA end Group1
+*/
+
+//#AUTA import Group1
+//#AUTA end Group1",
+@"/*
+#AUTA export Group1
+TypeProxyOf ## < ## Object1 ##> ##::GetTypeProxy();
+#AUTA end Group1
+*/
+
+//#AUTA import Group1
+TypeProxyOf<Object1>::GetTypeProxy();
 //#AUTA end Group1");
 
         private static TestFile BasicMultipleGroups = new TestFile(@"/*
@@ -115,6 +133,7 @@ TypeProxyOf < Object1 >::GetTypeProxy();
             TestFile.RunTest("Basic Import / Export", BasicInput);
             TestFile.RunTest("Basic Import / Export Multiple Groups", BasicMultipleGroups);
             TestFile.RunTest("Basic Import / Export Multiple Imports", BasicRepeatedImport);
+            TestFile.RunTest("Basic Import / Export Concatenation Test", BasicConcatinationTest);
 
             List<TestFile> lList = new List<TestFile>() { BasicMultiFileImportFile1, BasicMultiFileImportFile2 };
             TestFile.RunTest("Basic Import / Export Across Files", lList);

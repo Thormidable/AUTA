@@ -76,8 +76,10 @@ namespace AUTA
                 for (int index = 0; index < lLines.Count; ++index)
                 {
                     var lLine = lLines[index];
+                    //Check if line is a valid AUTA command
                     if (CommandInterface.ParseAUTALine(lLine))
                     {
+                        //Find and use plugin which can handle the detected line
                         var plugin = mPlugins.FirstOrDefault(x => x.AcceptedLine(lLine));
                         var lBlock = plugin?.ExtractAUTABlock(lLines, index, lPath);
                         if (lBlock == null)
@@ -99,8 +101,6 @@ namespace AUTA
 
         private static void ProcessParse()
         {
-            CacheForProcessing();
-
             HashSet<string> lImportPaths = new HashSet<string>();
             foreach (var plugin in mPlugins)
             {
@@ -120,6 +120,7 @@ namespace AUTA
                     var lLine = lLines[index];
                     if (CommandInterface.ParseAUTALine(lLine))
                     {
+                        //Find plugin to handle AUTA command
                         var plugin = mPlugins.FirstOrDefault(x => x.AcceptedLine(lLine));
                         var lBlock = plugin?.ExtractAUTABlock(lLines, index, lPath);
                         if (lBlock == null)
@@ -132,6 +133,7 @@ namespace AUTA
                             var lInsert = plugin.ProcessBlock(lBlock);
                             if (lInsert != null)
                             {
+                                //Strip ## commands
                                 lInsert = CommandInterface.RemoveConcatination(lInsert.ToList()).ToArray();
                                 lResult.Add(lLines[index]);
                                 lResult.AddRange(lInsert);
@@ -220,11 +222,12 @@ namespace AUTA
 
             AddPlugins();
             CacheParse(lPaths);
-
             CheckErrors();
 
             if (!mError)
             {
+                //Process received data now to ensure all input blocks commands and objects have been inputted
+                CacheForProcessing();
                 ProcessParse();
                 CheckErrors();
             }
